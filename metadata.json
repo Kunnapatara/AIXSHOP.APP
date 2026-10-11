@@ -1,0 +1,6 @@
+{
+  "name": "AIXSHOP",
+  "description": "AI Commerce Visibility & Product Intelligence Infrastructure for modern discovery across search, AI, and commerce surfaces.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
