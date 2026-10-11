@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, ShoppingBag, Store, ShieldAlert, Sparkles, ArrowRight } from 'lucide-react';
+import { Layers, Store, ArrowRight } from 'lucide-react';
 
 export type UserJourney = 'shopper' | 'merchant' | 'admin' | 'landing';
 
@@ -35,62 +35,46 @@ export const GlobalJourneyBar: React.FC<GlobalJourneyBarProps> = ({
             </span>
           </button>
 
-          {/* Zone 2: Clean Navigation Links & Journey Switcher */}
-          <nav className="hidden md:flex items-center gap-1 bg-stone-100/90 p-1 rounded-2xl border border-stone-200/80 shadow-2xs">
-            {/* Landing / Overview */}
+          {/* Zone 2: Merchant SaaS Navigation Links */}
+          <nav className="hidden md:flex items-center gap-1">
             <button
               type="button"
               onClick={onNavigateLanding || (() => onSelectJourney('landing'))}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 currentJourney === 'landing'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-white/60'
+                  ? 'bg-stone-100 text-stone-900 shadow-2xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
               }`}
             >
-              Platform
+              Overview
             </button>
 
-            {/* Shopper */}
-            <button
-              type="button"
-              onClick={() => onSelectJourney('shopper')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                currentJourney === 'shopper'
-                  ? 'bg-[#F97316] text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-white/60'
-              }`}
+            <a
+              href="#quick-store-check"
+              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-all cursor-pointer"
             >
-              <ShoppingBag className="w-3.5 h-3.5" />
-              <span>Shopper</span>
-            </button>
+              Store Audit
+            </a>
 
-            {/* Merchant */}
-            <button
-              type="button"
-              onClick={() => onSelectJourney('merchant')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                currentJourney === 'merchant'
-                  ? 'bg-[#F97316] text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-white/60'
-              }`}
+            <a
+              href="#value-chain"
+              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-all cursor-pointer"
             >
-              <Store className="w-3.5 h-3.5" />
-              <span>Merchant Console</span>
-            </button>
+              Intelligence Engine
+            </a>
 
-            {/* Admin */}
-            <button
-              type="button"
-              onClick={() => onSelectJourney('admin')}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                currentJourney === 'admin'
-                  ? 'bg-[#F97316] text-white shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-white/60'
-              }`}
+            <a
+              href="#pricing"
+              onClick={(e) => {
+                if (onNavigatePricing) {
+                  e.preventDefault();
+                  onNavigatePricing();
+                }
+              }}
+              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-all cursor-pointer"
             >
-              <ShieldAlert className="w-3.5 h-3.5" />
-              <span>Admin Tower</span>
-            </button>
+              Pricing
+            </a>
           </nav>
 
           {/* Zone 3: 1-2 Primary Actions */}

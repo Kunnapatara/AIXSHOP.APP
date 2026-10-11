@@ -109,7 +109,7 @@ export const ProductIntelligencePreview: React.FC<ProductIntelligencePreviewProp
                 onClick={onNavigateShopper}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-mono font-semibold transition-colors cursor-pointer"
               >
-                <span>Shopper Surface (Page 11)</span>
+                <span>Shopper AI Intelligence View</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </button>
             )}
