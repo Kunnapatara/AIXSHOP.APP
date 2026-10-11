@@ -14,8 +14,8 @@ import { QuickStoreCheckSection } from './components/landing/QuickStoreCheckSect
 import { Footer } from './components/Footer';
 
 export default function App() {
-  // Primary Journey State: 'merchant' (Default Store-First Merchant Console working surface) | 'landing' | 'shopper' | 'admin'
-  const [currentJourney, setCurrentJourney] = useState<UserJourney>('merchant');
+  // Primary Journey State: 'landing' (Default Public Entry: Landing / Sales / Store Check) | 'merchant' | 'shopper' | 'admin'
+  const [currentJourney, setCurrentJourney] = useState<UserJourney>('landing');
   
   // Secondary sub-tab states for merchant console: 'home' is the default Store-First view
   const [merchantSubTab, setMerchantSubTab] = useState<MerchantTab>('home');
@@ -40,7 +40,7 @@ export default function App() {
       return;
     }
     setCurrentJourney('merchant');
-    setMerchantSubTab('visibility');
+    setMerchantSubTab('audit');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -92,6 +92,10 @@ export default function App() {
         <div className="flex-1 flex flex-col">
           <MerchantExperience
             initialTab={merchantSubTab}
+            onNavigateLanding={() => {
+              setCurrentJourney('landing');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         </div>
       )}
@@ -128,7 +132,7 @@ export default function App() {
               }}
               onNavigateReport={() => {
                 setCurrentJourney('merchant');
-                setMerchantSubTab('visibility');
+                setMerchantSubTab('audit');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               onNavigatePricing={handleScrollToPricing}
@@ -141,7 +145,7 @@ export default function App() {
                 url={submittedUrl}
                 onContinueToAudit={() => {
                   setCurrentJourney('merchant');
-                  setMerchantSubTab('visibility');
+                  setMerchantSubTab('audit');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 onNavigateHome={() => {

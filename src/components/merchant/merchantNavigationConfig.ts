@@ -1,12 +1,23 @@
 /**
- * AIXSHOP — Canonical Merchant Navigation Configuration & Types
- * Single authoritative source of truth for merchant navigation items:
- * Primary: Home | Catalog | Issues | Visibility
- * Secondary Account: Connections | Subscription | Settings
+ * AIXSHOP — Authoritative Merchant Navigation Configuration & Types
+ * Locked 7-Page Architecture Contract:
+ * 1. Landing / Sales / Store Check (Public Entry)
+ * 2. Home (Merchant Console Overview)
+ * 3. Audit (Store & Catalog Audit Diagnostics + AI Visibility Observations)
+ * 4. Products (Catalog Workbench)
+ * 5. Product Detail (Contextual Drill-down)
+ * 6. Actions (Issues & Remediation Action Center)
+ * 7. Store / Settings (Secondary Account & Store Profile Surface)
+ *
+ * Primary Merchant Destinations: Home | Audit | Products | Actions
+ * Account Surface: Connections | Subscription | Settings
  */
 
 export type MerchantTab = 
   | 'home' 
+  | 'audit' 
+  | 'products' 
+  | 'actions'
   | 'catalog' 
   | 'issues' 
   | 'visibility';
@@ -28,14 +39,17 @@ export interface AccountSectionItem {
 }
 
 /**
- * EXACTLY 4 Primary Merchant Navigation items.
- * No 'More', No 'Readiness', No role switchers.
+ * EXACTLY 4 Primary Merchant Navigation destinations as specified in the product contract:
+ * 1. Home
+ * 2. Audit
+ * 3. Products
+ * 4. Actions
  */
 export const MERCHANT_PRIMARY_NAV_ITEMS: readonly MerchantNavItem[] = [
   { id: 'home', label: 'Home', iconName: 'LayoutDashboard' },
-  { id: 'catalog', label: 'Catalog', iconName: 'Package', badgeType: 'count' },
-  { id: 'issues', label: 'Issues', iconName: 'AlertTriangle', badgeType: 'alert' },
-  { id: 'visibility', label: 'Visibility', iconName: 'Compass' },
+  { id: 'audit', label: 'Audit', iconName: 'Compass' },
+  { id: 'products', label: 'Products', iconName: 'Package', badgeType: 'count' },
+  { id: 'actions', label: 'Actions', iconName: 'AlertTriangle', badgeType: 'alert' },
 ] as const;
 
 export const MERCHANT_ACCOUNT_SECTIONS: readonly AccountSectionItem[] = [
@@ -54,37 +68,34 @@ export const MERCHANT_ACCOUNT_SECTIONS: readonly AccountSectionItem[] = [
   { 
     id: 'settings', 
     label: 'Settings', 
-    description: 'Store profile, verified domains & audit schedules',
+    description: 'Store profile, verified domains & audit preferences',
     iconName: 'Settings' 
   },
 ] as const;
 
 /**
- * Resolves any tab string or alias into a canonical MerchantTab.
- * Strict canonical resolution mapping:
- * - 'overview' -> 'home'
- * - 'products' -> 'catalog'
- * - 'discovery' -> 'visibility'
- * - 'readiness' -> 'visibility'
- * - 'offers' -> 'catalog'
- * - 'monitoring' / 'analytics' / 'report' -> 'visibility'
+ * Authoritative tab resolver mapping directly to the four primary destinations:
+ * - 'audit' (and legacy aliases 'visibility', 'readiness', 'discovery', 'monitoring', 'report') -> 'audit'
+ * - 'products' (and legacy aliases 'catalog', 'offers') -> 'products'
+ * - 'actions' (and legacy alias 'issues') -> 'actions'
+ * - 'home' (and alias 'overview') -> 'home'
  */
 export function resolveMerchantTab(tab?: string): MerchantTab {
   if (!tab) return 'home';
   if (tab === 'home' || tab === 'overview') return 'home';
-  if (tab === 'catalog' || tab === 'products' || tab === 'offers') return 'catalog';
-  if (tab === 'issues' || tab === 'actions') return 'issues';
   if (
+    tab === 'audit' || 
     tab === 'visibility' || 
-    tab === 'audit' ||
     tab === 'discovery' || 
     tab === 'readiness' || 
     tab === 'monitoring' || 
     tab === 'analytics' || 
     tab === 'report'
   ) {
-    return 'visibility';
+    return 'audit';
   }
+  if (tab === 'products' || tab === 'catalog' || tab === 'offers') return 'products';
+  if (tab === 'actions' || tab === 'issues') return 'actions';
   return 'home';
 }
 
@@ -98,5 +109,5 @@ export const MERCHANT_MENTAL_MODEL_STAGES = [
   { stage: 'review', stepNum: '03', title: 'Review', actionLabel: 'Review Tasks' },
   { stage: 'approve', stepNum: '04', title: 'Approve', actionLabel: 'Approve Fixes' },
   { stage: 'recheck', stepNum: '05', title: 'Recheck', actionLabel: 'Run Recheck' },
-  { stage: 'ready', stepNum: '06', title: 'Ready', actionLabel: 'View Readiness' },
+  { stage: 'ready', stepNum: '06', title: 'Ready', actionLabel: 'AI Discoverable' },
 ] as const;

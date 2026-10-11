@@ -38,10 +38,12 @@ export type { MerchantTab };
 
 interface MerchantExperienceProps {
   initialTab?: MerchantTab | string;
+  onNavigateLanding?: () => void;
 }
 
 export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
-  initialTab = 'home'
+  initialTab = 'home',
+  onNavigateLanding
 }) => {
   // Canonical Session Coordinator
   const {
@@ -91,12 +93,15 @@ export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
     switch (id) {
       case 'home':
         return <LayoutDashboard className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />;
-      case 'catalog':
-        return <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />;
-      case 'issues':
-        return <AlertTriangle className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isActive ? 'text-amber-400' : 'text-amber-600'}`} />;
+      case 'audit':
       case 'visibility':
         return <Compass className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isActive ? 'text-orange-400' : 'text-orange-600'}`} />;
+      case 'products':
+      case 'catalog':
+        return <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />;
+      case 'actions':
+      case 'issues':
+        return <AlertTriangle className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isActive ? 'text-amber-400' : 'text-amber-600'}`} />;
       default:
         return null;
     }
@@ -105,6 +110,7 @@ export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
   // Map badges for primary tabs
   const getPrimaryBadge = (id: MerchantTab, isActive: boolean) => {
     switch (id) {
+      case 'products':
       case 'catalog':
         return (
           <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
@@ -113,6 +119,7 @@ export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
             {CANONICAL_SYSTEM_KPIS.totalCatalogProducts}
           </span>
         );
+      case 'actions':
       case 'issues':
         return (
           <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
@@ -186,6 +193,19 @@ export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
             {/* Right Zone: Primary CTA (+ Add Products) + Account + Mobile Hamburger Button */}
             <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
               
+              {/* Return to Public Landing / Store Check */}
+              {onNavigateLanding && (
+                <button
+                  type="button"
+                  onClick={onNavigateLanding}
+                  className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 rounded-xl hover:bg-stone-100 transition-colors cursor-pointer border border-stone-200/80"
+                  title="Return to Public Landing & Store URL Quick Check"
+                >
+                  <Compass className="w-3.5 h-3.5 text-orange-600" />
+                  <span>Store Check</span>
+                </button>
+              )}
+
               {/* Primary Merchant CTA: + Add Products */}
               <button
                 type="button"
@@ -361,11 +381,11 @@ export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
             onBack={() => setSelectedDetailProductId(null)}
             onNavigateActions={() => {
               setSelectedDetailProductId(null);
-              setActiveTab('issues');
+              setActiveTab('actions');
             }}
             onNavigateProducts={() => {
               setSelectedDetailProductId(null);
-              setActiveTab('catalog');
+              setActiveTab('products');
             }}
             issues={issues}
             onApproveIssue={handleApproveIssue}
@@ -376,18 +396,18 @@ export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
             onBack={() => setIsSettingsViewOpen(false)}
             onNavigateCatalog={() => {
               setIsSettingsViewOpen(false);
-              setActiveTab('catalog');
+              setActiveTab('products');
             }}
             onNavigateAudit={() => {
               setIsSettingsViewOpen(false);
-              setActiveTab('visibility');
+              setActiveTab('audit');
             }}
           />
         ) : activeTab === 'home' ? (
           <MerchantOverviewHome
-            onNavigateIssues={() => setActiveTab('issues')}
-            onNavigateProducts={() => setActiveTab('catalog')}
-            onNavigateVisibility={() => setActiveTab('visibility')}
+            onNavigateIssues={() => setActiveTab('actions')}
+            onNavigateProducts={() => setActiveTab('products')}
+            onNavigateVisibility={() => setActiveTab('audit')}
             onAddProducts={() => setIsAddModalOpen(true)}
             issues={issues}
             onApproveIssue={handleApproveIssue}
@@ -396,33 +416,12 @@ export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
             onRecheckStore={runRecheckSimulation}
             isRechecking={isRechecking}
           />
-        ) : activeTab === 'catalog' ? (
-          <div className="py-2">
-            <ProductsWorkbenchPage
-              onBackToLanding={() => setActiveTab('home')}
-              onNavigateOverview={() => setActiveTab('home')}
-              onNavigateIssues={() => setActiveTab('issues')}
-              onNavigateAnalysis={() => setActiveTab('visibility')}
-              onNavigateReport={() => setActiveTab('visibility')}
-              onSelectProductDetail={(productId) => setSelectedDetailProductId(productId)}
-            />
-          </div>
-        ) : activeTab === 'issues' ? (
-          <div className="py-2">
-            <IssuesPage
-              onNavigateHome={() => setActiveTab('home')}
-              onNavigateOverview={() => setActiveTab('home')}
-              onNavigateProducts={() => setActiveTab('catalog')}
-              issues={issues}
-              onUpdateIssue={handleUpdateIssue}
-            />
-          </div>
-        ) : activeTab === 'visibility' ? (
+        ) : activeTab === 'audit' || activeTab === 'visibility' ? (
           <div className="py-2">
             <StoreAuditPage
               onNavigateHome={() => setActiveTab('home')}
-              onNavigateProducts={() => setActiveTab('catalog')}
-              onNavigateActions={() => setActiveTab('issues')}
+              onNavigateProducts={() => setActiveTab('products')}
+              onNavigateActions={() => setActiveTab('actions')}
               onInspectProduct={(productId) => setSelectedDetailProductId(productId)}
               issues={issues}
               onApproveIssue={handleApproveIssue}
@@ -432,11 +431,32 @@ export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
               isRechecking={isRechecking}
             />
           </div>
+        ) : activeTab === 'products' || activeTab === 'catalog' ? (
+          <div className="py-2">
+            <ProductsWorkbenchPage
+              onBackToLanding={() => setActiveTab('home')}
+              onNavigateOverview={() => setActiveTab('home')}
+              onNavigateIssues={() => setActiveTab('actions')}
+              onNavigateAnalysis={() => setActiveTab('audit')}
+              onNavigateReport={() => setActiveTab('audit')}
+              onSelectProductDetail={(productId) => setSelectedDetailProductId(productId)}
+            />
+          </div>
+        ) : activeTab === 'actions' || activeTab === 'issues' ? (
+          <div className="py-2">
+            <IssuesPage
+              onNavigateHome={() => setActiveTab('home')}
+              onNavigateOverview={() => setActiveTab('home')}
+              onNavigateProducts={() => setActiveTab('products')}
+              issues={issues}
+              onUpdateIssue={handleUpdateIssue}
+            />
+          </div>
         ) : (
           <MerchantOverviewHome
-            onNavigateIssues={() => setActiveTab('issues')}
-            onNavigateProducts={() => setActiveTab('catalog')}
-            onNavigateVisibility={() => setActiveTab('visibility')}
+            onNavigateIssues={() => setActiveTab('actions')}
+            onNavigateProducts={() => setActiveTab('products')}
+            onNavigateVisibility={() => setActiveTab('audit')}
             onAddProducts={() => setIsAddModalOpen(true)}
             issues={issues}
             onApproveIssue={handleApproveIssue}
@@ -469,12 +489,12 @@ export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
             >
               <div className="relative">
                 {getPrimaryIcon(item.id, isActive)}
-                {item.id === 'issues' && openIssuesCount > 0 && (
+                {(item.id === 'actions' || item.id === 'issues') && openIssuesCount > 0 && (
                   <span className="absolute -top-1 -right-2 px-1 text-[9px] font-black bg-rose-500 text-white rounded-full leading-none py-0.5">
                     {openIssuesCount}
                   </span>
                 )}
-                {item.id === 'catalog' && (
+                {(item.id === 'products' || item.id === 'catalog') && (
                   <span className="absolute -top-1 -right-2 px-1 text-[9px] font-black bg-stone-200 text-stone-700 rounded-full leading-none py-0.5">
                     24
                   </span>
