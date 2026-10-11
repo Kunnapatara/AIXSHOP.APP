@@ -18,6 +18,7 @@ import {
 import { StoreAuditHero } from '../merchant/StoreAuditHero';
 import { StoreFindingsSection } from '../merchant/StoreFindingsSection';
 import { ProductAuditModal } from '../merchant/ProductAuditModal';
+import { MerchantVisibilityPage } from '../merchant/MerchantVisibilityPage';
 import { IssueItem } from '../../types/issues';
 import { CANONICAL_MERCHANT, CANONICAL_SYSTEM_KPIS, CANONICAL_CATALOG_PRODUCTS } from '../../data/canonicalCatalog';
 
@@ -46,6 +47,7 @@ export const StoreAuditPage: React.FC<StoreAuditPageProps> = ({
   onRecheckStore,
   isRechecking = false
 }) => {
+  const [activeView, setActiveView] = useState<'findings' | 'observations'>('findings');
   const [selectedAuditTab, setSelectedAuditTab] = useState<'all' | 'critical' | 'improvement'>('all');
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedProductAudit, setSelectedProductAudit] = useState<{ id: string; name: string; issueIds: string[] }>({
@@ -148,30 +150,71 @@ export const StoreAuditPage: React.FC<StoreAuditPageProps> = ({
             </span>
           </div>
         </div>
+
+        {/* View Mode Selector */}
+        <div className="flex items-center gap-2 pt-2 border-t border-stone-100">
+          <button
+            type="button"
+            onClick={() => setActiveView('findings')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeView === 'findings'
+                ? 'bg-stone-900 text-white shadow-xs'
+                : 'bg-stone-100 text-stone-600 hover:text-stone-900 hover:bg-stone-200'
+            }`}
+          >
+            Store Findings & Diagnostics
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveView('observations')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeView === 'observations'
+                ? 'bg-stone-900 text-white shadow-xs'
+                : 'bg-stone-100 text-stone-600 hover:text-stone-900 hover:bg-stone-200'
+            }`}
+          >
+            AI Engine Visibility Observations
+          </button>
+        </div>
       </div>
 
-      {/* 2. Store Audit Hero (Recheck & Diagnostic) */}
-      <StoreAuditHero
-        openIssuesCount={openIssuesCount}
-        readinessScore={readinessScore}
-        onAuditStore={handleAuditStore}
-        onStartFixing={() => {
-          const el = document.getElementById('findings-container');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }}
-        onRecheckStore={onRecheckStore}
-        isRechecking={isRechecking}
-      />
+      {activeView === 'observations' ? (
+        <div className="bg-white rounded-3xl p-4 sm:p-6 border border-stone-200/80 shadow-xs">
+          <MerchantVisibilityPage
+            onNavigateIssues={onNavigateActions || (() => {})}
+            onNavigateCatalog={onNavigateProducts}
+            onNavigateHome={onNavigateHome}
+            issues={issues}
+            onResolveIssue={onApproveIssue}
+            readinessScore={readinessScore}
+          />
+        </div>
+      ) : (
+        <>
+          {/* 2. Store Audit Hero (Recheck & Diagnostic) */}
+          <StoreAuditHero
+            openIssuesCount={openIssuesCount}
+            readinessScore={readinessScore}
+            onAuditStore={handleAuditStore}
+            onStartFixing={() => {
+              const el = document.getElementById('findings-container');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            onRecheckStore={onRecheckStore}
+            isRechecking={isRechecking}
+          />
 
-      {/* 3. Detailed Store Findings Section */}
-      <div id="findings-container">
-        <StoreFindingsSection
-          issues={issues}
-          onInspectProduct={handleInspectProduct}
-          onOpenActionCenter={onNavigateActions}
-          onResolveIssue={onApproveIssue}
-        />
-      </div>
+          {/* 3. Detailed Store Findings Section */}
+          <div id="findings-container">
+            <StoreFindingsSection
+              issues={issues}
+              onInspectProduct={handleInspectProduct}
+              onOpenActionCenter={onNavigateActions}
+              onResolveIssue={onApproveIssue}
+            />
+          </div>
+        </>
+      )}
 
       {/* Product Audit Modal */}
       <ProductAuditModal

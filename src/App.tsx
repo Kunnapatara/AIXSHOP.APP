@@ -10,6 +10,7 @@ import { FragmentationProblemSection } from './components/FragmentationProblemSe
 import { ProductIntelligencePreview } from './components/ProductIntelligencePreview';
 import { EvidencePrinciplesSection } from './components/EvidencePrinciplesSection';
 import { MerchantWorkflowSection } from './components/MerchantWorkflowSection';
+import { QuickStoreCheckSection } from './components/landing/QuickStoreCheckSection';
 import { Footer } from './components/Footer';
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
   // Secondary sub-tab states for merchant console: 'home' is the default Store-First view
   const [merchantSubTab, setMerchantSubTab] = useState<MerchantTab>('home');
   const [submittedUrl, setSubmittedUrl] = useState<string>('https://shop.aeropulse.com/products/vaporstride-carbon-elite');
+  const [isQuickCheckOpen, setIsQuickCheckOpen] = useState<boolean>(false);
   const urlInputRef = useRef<HTMLInputElement>(null);
 
   const handleSelectJourney = (journey: UserJourney) => {
@@ -27,7 +29,16 @@ export default function App() {
   };
 
   const handleStartAnalysis = (url: string) => {
-    setSubmittedUrl(url || 'https://shop.aeropulse.com/products/vaporstride-carbon-elite');
+    const targetUrl = url || 'https://shop.aeropulse.com/products/vaporstride-carbon-elite';
+    setSubmittedUrl(targetUrl);
+    if (currentJourney === 'landing') {
+      setIsQuickCheckOpen(true);
+      setTimeout(() => {
+        const el = document.getElementById('quick-store-check');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      return;
+    }
     setCurrentJourney('merchant');
     setMerchantSubTab('visibility');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -123,6 +134,27 @@ export default function App() {
               onNavigatePricing={handleScrollToPricing}
               inputRef={urlInputRef}
             />
+
+            {/* Quick Store Check (Page 1 Integrated Diagnostic Flow) */}
+            {isQuickCheckOpen && (
+              <QuickStoreCheckSection
+                url={submittedUrl}
+                onContinueToAudit={() => {
+                  setCurrentJourney('merchant');
+                  setMerchantSubTab('visibility');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onNavigateHome={() => {
+                  setCurrentJourney('merchant');
+                  setMerchantSubTab('home');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onReset={() => {
+                  setIsQuickCheckOpen(false);
+                  handleFocusUrlInput();
+                }}
+              />
+            )}
 
             {/* Quick 3-Journey Gateway Block */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

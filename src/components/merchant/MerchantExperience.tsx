@@ -419,13 +419,17 @@ export const MerchantExperience: React.FC<MerchantExperienceProps> = ({
           </div>
         ) : activeTab === 'visibility' ? (
           <div className="py-2">
-            <MerchantVisibilityPage
-              onNavigateIssues={() => setActiveTab('issues')}
-              onNavigateCatalog={() => setActiveTab('catalog')}
+            <StoreAuditPage
               onNavigateHome={() => setActiveTab('home')}
+              onNavigateProducts={() => setActiveTab('catalog')}
+              onNavigateActions={() => setActiveTab('issues')}
+              onInspectProduct={(productId) => setSelectedDetailProductId(productId)}
               issues={issues}
-              onResolveIssue={handleApproveIssue}
+              onApproveIssue={handleApproveIssue}
+              onDismissIssue={handleDismissIssue}
               readinessScore={readinessScore}
+              onRecheckStore={runRecheckSimulation}
+              isRechecking={isRechecking}
             />
           </div>
         ) : (
